@@ -1,2 +1,2 @@
-# Born baćac Simper
+# Borna Baćac Simper
 Repo za praksu za stažiranje
