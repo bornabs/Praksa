@@ -6,7 +6,7 @@ import Navbar from './Navbar.vue'
   <div class="min-h-screen flex flex-col">
     <Navbar />
     <main class="flex-1 p-4 md:p-6 bg-gray-100 text-gray-800">
-  <div class="max-w-4xl mx-auto w-full h-full">
+  <div class="max-w-4xl mx-auto ">
     <slot />
   </div>
 </main>
