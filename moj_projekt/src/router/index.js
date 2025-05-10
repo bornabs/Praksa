@@ -1,6 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import TestPage from '@/views/TestPage.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/HomeView.vue';
+import TestPage from '@/views/TestPage.vue';
+import LoginView from '@/views/LoginView.vue'; // 🆕 dodano
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,13 +14,19 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
     },
-    { path: '/test', component: TestPage }
+    {
+      path: '/test',
+      name: 'test',
+      component: TestPage,
+    },
+    {
+      path: '/login', // 🆕 nova ruta
+      name: 'login',
+      component: LoginView,
+    },
   ],
-})
+});
 
-export default router
+export default router;
