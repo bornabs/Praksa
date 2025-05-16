@@ -12,7 +12,8 @@
       <div
         v-for="tournament in tournaments.slice(0, 5)"
         :key="tournament.id"
-        class="bg-white p-4 rounded-2xl shadow-sm border hover:shadow-md transition"
+        class="p-4 rounded-2xl shadow-md text-white bg-gradient-to-br from-orange-400 to-orange-700 transition"
+
       >
         <h2 class="text-xl font-semibold">{{ tournament.name }}</h2>
         <p class="text-gray-600">{{ formatDate(tournament.date) }} – {{ tournament.location }}</p>
@@ -23,7 +24,7 @@
     <div class="mt-6">
       <RouterLink
         to="/tournaments"
-        class="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+        class="inline-block bg-blue-900 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
       >
         Pogledaj sve turnire →
       </RouterLink>
