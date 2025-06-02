@@ -1,102 +1,92 @@
 <template>
-  <div class="register-container">
-    <div class="register-card">
-      <h2>Registracija</h2>
+  <div class="min-h-screen flex items-center justify-center bg-white px-4">
+    <div class="w-full max-w-md space-y-6">
+      <h1 class="text-2xl font-bold text-gray-900">Kreiraj račun</h1>
 
-      <input v-model="email" type="email" placeholder="Email" />
-      <input v-model="password" type="password" placeholder="Lozinka" />
+      <form @submit.prevent="handleSignup" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            v-model="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-      <button class="btn" @click="registerUser">Registriraj se</button>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Password</label>
+          <input
+            v-model="password"
+            type="password"
+            required
+            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-      <p v-if="message" class="message">{{ message }}</p>
-      <p v-if="error" class="error">{{ error }}</p>
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
+        >
+          Create account
+        </button>
+      </form>
+
+      <div class="flex items-center justify-center space-x-2">
+        <hr class="flex-grow border-gray-300" />
+        <span class="text-sm text-gray-500">Or continue with</span>
+        <hr class="flex-grow border-gray-300" />
+      </div>
+
+      <button
+        @click="handleGoogleSignup"
+        class="w-full border border-gray-300 rounded-md py-2 px-4 flex items-center justify-center space-x-2 hover:bg-gray-50"
+      >
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5" />
+        <span class="text-sm font-medium text-gray-700">Continue with Google</span>
+      </button>
+
+      <p class="text-center text-sm text-gray-600">
+        Imaš račun?
+        <RouterLink to="/login" class="text-blue-600 hover:underline">Sign in</RouterLink>
+      </p>
     </div>
   </div>
 </template>
 
 <script>
-import { supabase } from '../supabaseClient'
+import { supabase } from '@/supabaseClient'
 
 export default {
-  name: 'RegisterView',
+  name: 'SignupView',
   data() {
     return {
       email: '',
-      password: '',
-      message: '',
-      error: ''
+      password: ''
     }
   },
   methods: {
-    async registerUser() {
-      this.error = ''
-      this.message = ''
+    async handleSignup() {
       const { error } = await supabase.auth.signUp({
         email: this.email,
         password: this.password
       })
+
       if (error) {
-        this.error = error.message
+        alert('Greška: ' + error.message)
       } else {
-        this.message = 'Uspješna registracija! Provjeri svoj email za potvrdu.'
+        this.$router.push('/')
+      }
+    },
+    async handleGoogleSignup() {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google'
+      })
+      if (error) {
+        alert('Greška pri Google prijavi: ' + error.message)
       }
     }
   }
 }
 </script>
-
-<style scoped>
-.register-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: #f3f4f6;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.register-card {
-  background: white;
-  padding: 2.5rem 3rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 100%;
-  max-width: 400px;
-}
-
-input {
-  display: block;
-  width: 100%;
-  margin: 0.5rem 0;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-}
-
-.btn {
-  width: 100%;
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background-color: #10b981;
-  border: none;
-  color: white;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.btn:hover {
-  background-color: #059669;
-}
-
-.error {
-  color: red;
-  margin-top: 1rem;
-}
-
-.message {
-  color: green;
-  margin-top: 1rem;
-}
-</style>

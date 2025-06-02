@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import TestPage from '@/views/TestPage.vue';
 import LoginView from '@/views/LoginView.vue'; 
 import RegisterView from '@/views/RegisterView.vue'
 
@@ -17,11 +16,7 @@ const router = createRouter({
       name: 'about',
       component: () => import('../views/AboutView.vue'),
     },
-    {
-      path: '/test',
-      name: 'test',
-      component: TestPage,
-    },
+   
     {
       path: '/login', // 🆕 nova ruta
       name: 'login',
@@ -33,10 +28,20 @@ const router = createRouter({
       component: RegisterView,
     },
     {
+  path: '/profile',
+  name: 'Profile',
+  component: () => import('@/views/ProfileView.vue')
+    },
+    {
+  path: '/tournaments/:id',
+  name: 'TournamentDetails',
+  component: () => import('@/views/TournamentDetailsView.vue'),
+    },
+    {
   path: '/tournaments',
   name: 'tournaments',
   component: () => import('@/views/TournamentsView.vue')
-},
+    },
   ],
 });
 

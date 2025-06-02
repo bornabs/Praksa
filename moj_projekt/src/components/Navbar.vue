@@ -1,43 +1,69 @@
 <template>
-  <nav class="bg-gray-900 text-white px-6 py-4 shadow flex items-center justify-between">
-    <div class="text-xl font-semibold">🏀 Aplikacija za turnire 🏀</div>
-    <ul class="flex space-x-4 items-center">
-      <li><router-link to="/" class="hover:text-blue-400">Početna</router-link></li>
-      <li><router-link to="/teams" class="hover:text-blue-400">Teams</router-link></li>
-      <li><router-link to="/tournaments" class="hover:text-blue-400">Tournaments</router-link></li>
-      <li><router-link to="/test" class="hover:text-blue-400">Test</router-link></li>
-      <li><router-link to="/about" class="hover:text-blue-400">O nama</router-link></li>
-      <li><router-link to="/login" class="hover:text-blue-400">Login</router-link></li>
-      <li>
-        <button @click="toggleDark" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-sm">
-          {{ isDark ? '🌙 Dark' : '☀️ Light' }}
+  <nav class="w-full bg-white shadow-md px-6 py-3 flex justify-between items-center">
+    <!-- Lijevo: Naslov -->
+    <div class="text-xl font-bold">🏀 Aplikacija za turnire 🏀</div>
+
+    <!-- Desno: Navigacija -->
+    <div class="flex gap-3 items-center">
+      <RouterLink
+        to="/"
+        class="px-3 py-1 rounded border text-white border-[#2563EB] bg-[#2563EB]"
+      >
+        Početna
+      </RouterLink>
+      <RouterLink to="/teams" class="px-3 py-1 rounded border border-white text-black hover:bg-gray-100">
+        Teams
+      </RouterLink>
+      <RouterLink to="/tournaments" class="px-3 py-1 rounded border border-white text-black hover:bg-gray-100">
+        Turniri
+      </RouterLink>
+      <RouterLink to="/about" class="px-3 py-1 rounded border border-white text-black hover:bg-gray-100">
+        O nama
+      </RouterLink>
+
+      <!-- Auth opcije -->
+      <template v-if="user">
+        <RouterLink to="/profile" class="px-3 py-1 rounded border border-white text-black hover:bg-gray-100">
+          Moj Profil
+        </RouterLink>
+        <button
+          @click="logout"
+          class="px-3 py-1 rounded border border-orange-500 bg-orange-500 text-white hover:bg-orange-600 transition"
+        >
+          Odjava
         </button>
-      </li>
-    </ul>
+      </template>
+      <template v-else>
+        <RouterLink
+          to="/login"
+          class="px-3 py-1 rounded border border-orange-500 bg-orange-500 text-white hover:bg-orange-600 transition"
+        >
+          Log in
+        </RouterLink>
+      </template>
+    </div>
   </nav>
 </template>
 
 <script setup>
+import { supabase } from '@/supabaseClient'
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-const isDark = ref(false)
+const user = ref(null)
+const router = useRouter()
 
-onMounted(() => {
-  const saved = localStorage.getItem('theme')
-  if (saved === 'dark') {
-    document.documentElement.classList.add('dark')
-    isDark.value = true
-  }
+onMounted(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  user.value = session?.user || null
+
+  supabase.auth.onAuthStateChange((_event, session) => {
+    user.value = session?.user || null
+  })
 })
 
-function toggleDark() {
-  isDark.value = !isDark.value
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-    localStorage.setItem('theme', 'light')
-  }
+const logout = async () => {
+  await supabase.auth.signOut()
+  router.push('/')
 }
 </script>

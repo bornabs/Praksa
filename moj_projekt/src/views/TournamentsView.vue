@@ -1,18 +1,19 @@
 <template>
-  <div class="p-6 max-w-5xl mx-auto">
-    <h1 class="text-2xl font-bold mb-6">Svi nadolazeći turniri</h1>
+  <div class="p-6 max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Nadolazeći turniri</h1>
 
     <div v-if="loading" class="text-gray-500">Učitavanje...</div>
     <div v-else-if="error" class="text-red-600">{{ error }}</div>
     <div v-else-if="tournaments.length === 0" class="text-gray-600">
-      Nema dostupnih turnira.
+      Trenutno nema najavljenih turnira.
     </div>
 
     <div v-else class="grid gap-4">
       <div
-        v-for="tournament in tournaments"
+        v-for="tournament in tournaments.slice(0, 5)"
         :key="tournament.id"
-        class="bg-white p-4 rounded-2xl shadow-sm border hover:shadow-md transition"
+        class="p-4 rounded-2xl shadow-md text-white bg-gradient-to-br from-orange-400 to-orange-500 transition"
+
       >
         <h2 class="text-xl font-semibold">{{ tournament.name }}</h2>
         <p class="text-gray-600">{{ formatDate(tournament.date) }} – {{ tournament.location }}</p>
@@ -20,12 +21,7 @@
       </div>
     </div>
 
-    <RouterLink
-      to="/"
-      class="mt-8 inline-block text-green-700 hover:text-green-900 transition underline"
-    >
-      ← Povratak na početnu
-    </RouterLink>
+    
   </div>
 </template>
 
@@ -33,7 +29,7 @@
 import { supabase } from '@/supabaseClient'
 
 export default {
-  name: 'TournamentsView',
+  name: 'HomeView',
   data() {
     return {
       tournaments: [],
