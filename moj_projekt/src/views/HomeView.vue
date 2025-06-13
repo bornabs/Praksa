@@ -12,7 +12,7 @@
             Prva hrvatska platforma za košarkaške turnire. Voliš se natjecati? Kreiraj svoj tim, prijavi se na turnire diljem Hrvatske te igraj igru koju voliš!
           </p>
           <div class="flex gap-4 flex-wrap">
-            <RouterLink to="/teams/create" class="bg-orange-400 hover:bg-orange-500 text-white px-4 py-2 rounded-lg">
+            <RouterLink to="/login" class="bg-orange-400 hover:bg-orange-500 text-white px-4 py-2 rounded-lg">
               Kreiraj svoj tim
             </RouterLink>
             <RouterLink to="/tournaments" class="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-lg">

@@ -16,20 +16,20 @@
         required
       />
 
-      <!-- Broj telefona -->
+      <!-- Ime kontakt osobe -->
       <input
-        v-model="team.phone"
+        v-model="team.contact_name"
         type="text"
-        placeholder="+385 ..."
+        placeholder="Unesi ime kontakt osobe"
         class="w-full mb-4 border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
       />
 
-      <!-- Email -->
+      <!-- Email kontakt osobe -->
       <input
-        v-model="team.email"
+        v-model="team.contact_email"
         type="email"
-        placeholder="Unesi Email"
+        placeholder="Unesi email kontakt osobe"
         class="w-full mb-6 border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
       />
@@ -41,7 +41,7 @@
           <input
             v-model="newPlayer"
             type="text"
-            placeholder="Unesi ime suigrača"
+            placeholder="Unesi ime igrača"
             class="flex-grow border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
@@ -62,15 +62,21 @@
         <ul class="mt-4 space-y-2" v-else>
           <li v-for="(player, index) in players" :key="index" class="flex justify-between items-center border px-4 py-2 rounded">
             {{ player }}
-            <button @click="removePlayer(index)" class="text-red-500 hover:underline">Ukloni</button>
+            <button @click="removePlayer(index)" class="text-red-500 hover:underline">
+              Ukloni
+            </button>
           </li>
         </ul>
       </div>
 
       <!-- Dugmad -->
       <div class="flex justify-end mt-6 gap-4">
-        <button @click="cancel" class="px-4 py-2 border rounded hover:bg-gray-100">Odustani</button>
-        <button @click="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Kreiraj</button>
+        <button @click="cancel" class="px-4 py-2 border rounded hover:bg-gray-100">
+          Odustani
+        </button>
+        <button @click="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Kreiraj
+        </button>
       </div>
     </div>
   </div>
@@ -79,21 +85,17 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '@/supabaseClient'
 
 const router = useRouter()
 
-const team = ref({
-  name: '',
-  phone: '',
-  email: ''
-})
-
+const team = ref({ name: '', contact_name: '', contact_email: '' })
 const newPlayer = ref('')
 const players = ref([])
 
 const addPlayer = () => {
   if (newPlayer.value.trim()) {
-    players.value.push(newPlayer.value.trim())
+    players.value.push(newPlayer.value.trim()) 
     newPlayer.value = ''
   }
 }
@@ -103,17 +105,39 @@ const removePlayer = (index) => {
 }
 
 const cancel = () => {
-  router.push('/')
+  router.push('/profile')
 }
 
-const submit = () => {
-  console.log('Podaci o timu:', {
-    ...team.value,
-    players: players.value
-  })
+const submit = async () => {
+  if (!team.value.name.trim()) {
+    return alert('Unesi naziv tima.')
+  }
+  if (!team.value.contact_name.trim()) {
+    return alert('Unesi kontakt osobu.')
+  }
+  if (!team.value.contact_email.trim()) {
+    return alert('Unesi email kontakt osobe.')
+  }
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return alert('Nisi prijavljen.')
+  }
+  
+  const { error } = await supabase.from('teams').insert([{
+    id: user.id,
+    name: team.value.name,
+    players: players.value,
+    contact_name: team.value.contact_name,
+    contact_email: team.value.contact_email
+  }])
 
-  // Simulacija slanja podataka na backend (ovdje možeš dodati pravi poziv kad bude backend)
-  // Nakon uspješne izrade tima, preusmjeri korisnika
+  if (error) {
+    console.error('Greška pri kreiranju tima!', error)
+    alert('Dogodila se greška. Pokušaj ponovno.')
+    return
+  }
+  
   router.push('/profile')
 }
 </script>
