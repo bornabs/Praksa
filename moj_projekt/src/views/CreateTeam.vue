@@ -60,7 +60,11 @@
         </div>
 
         <ul class="mt-4 space-y-2" v-else>
-          <li v-for="(player, index) in players" :key="index" class="flex justify-between items-center border px-4 py-2 rounded">
+          <li
+            v-for="(player, index) in players"
+            :key="index"
+            class="flex justify-between items-center border px-4 py-2 rounded"
+          >
             {{ player }}
             <button @click="removePlayer(index)" class="text-red-500 hover:underline">
               Ukloni
@@ -74,8 +78,12 @@
         <button @click="cancel" class="px-4 py-2 border rounded hover:bg-gray-100">
           Odustani
         </button>
-        <button @click="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Kreiraj
+        <button
+          @click="submit"
+          :disabled="loading"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-60"
+        >
+          {{ loading ? 'Kreiranje...' : 'Kreiraj' }}
         </button>
       </div>
     </div>
@@ -92,10 +100,11 @@ const router = useRouter()
 const team = ref({ name: '', contact_name: '', contact_email: '' })
 const newPlayer = ref('')
 const players = ref([])
+const loading = ref(false)
 
 const addPlayer = () => {
   if (newPlayer.value.trim()) {
-    players.value.push(newPlayer.value.trim()) 
+    players.value.push(newPlayer.value.trim())
     newPlayer.value = ''
   }
 }
@@ -109,21 +118,19 @@ const cancel = () => {
 }
 
 const submit = async () => {
-  if (!team.value.name.trim()) {
-    return alert('Unesi naziv tima.')
-  }
-  if (!team.value.contact_name.trim()) {
-    return alert('Unesi kontakt osobu.')
-  }
-  if (!team.value.contact_email.trim()) {
-    return alert('Unesi email kontakt osobe.')
-  }
-  
+  if (!team.value.name.trim()) return alert('Unesi naziv tima.')
+  if (!team.value.contact_name.trim()) return alert('Unesi kontakt osobu.')
+  if (!team.value.contact_email.trim()) return alert('Unesi email kontakt osobe.')
+
+  loading.value = true
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
-    return alert('Nisi prijavljen.')
+    alert('Nisi prijavljen.')
+    loading.value = false
+    return
   }
-  
+
   const { error } = await supabase.from('teams').insert([{
     id: user.id,
     name: team.value.name,
@@ -132,12 +139,14 @@ const submit = async () => {
     contact_email: team.value.contact_email
   }])
 
+  loading.value = false
+
   if (error) {
     console.error('Greška pri kreiranju tima!', error)
     alert('Dogodila se greška. Pokušaj ponovno.')
     return
   }
-  
+
   router.push('/profile')
 }
 </script>

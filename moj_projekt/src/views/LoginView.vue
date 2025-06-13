@@ -29,9 +29,10 @@
 
         <button
           type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
+          :disabled="loading"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md disabled:opacity-60"
         >
-          Prijava
+          {{ loading ? 'Prijava...' : 'Prijava' }}
         </button>
       </form>
 
@@ -43,14 +44,21 @@
 
       <button
         @click="handleGoogleLogin"
-        class="w-full border border-gray-300 rounded-md py-2 px-4 flex items-center justify-center space-x-2 hover:bg-gray-50"
+        :disabled="googleLoading"
+        class="w-full border border-gray-300 rounded-md py-2 px-4 flex items-center justify-center space-x-2 hover:bg-gray-50 disabled:opacity-60"
       >
-        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5" />
-        <span class="text-sm font-medium text-gray-700">Continue with Google</span>
+        <img
+          v-if="!googleLoading"
+          src="https://www.svgrepo.com/show/475656/google-color.svg"
+          class="h-5 w-5"
+        />
+        <span class="text-sm font-medium text-gray-700">
+          {{ googleLoading ? 'Prijava...' : 'Continue with Google' }}
+        </span>
       </button>
 
       <p class="text-center text-sm text-gray-600">
-        Nemas račun?
+        Nemaš račun?
         <RouterLink to="/register" class="text-blue-600 hover:underline">Sign up</RouterLink>
       </p>
     </div>
@@ -65,11 +73,14 @@ export default {
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      loading: false,
+      googleLoading: false
     }
   },
   methods: {
     async handleLogin() {
+      this.loading = true
       const { error } = await supabase.auth.signInWithPassword({
         email: this.email,
         password: this.password
@@ -80,14 +91,17 @@ export default {
       } else {
         this.$router.push('/')
       }
+      this.loading = false
     },
     async handleGoogleLogin() {
+      this.googleLoading = true
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google'
       })
       if (error) {
         alert('Greška prilikom Google prijave: ' + error.message)
       }
+      this.googleLoading = false
     }
   }
 }
