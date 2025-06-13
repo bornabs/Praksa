@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import LoginView from '@/views/LoginView.vue'; 
 import RegisterView from '@/views/RegisterView.vue'
+import CreateTeam from '@/views/CreateTeam.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +23,12 @@ const router = createRouter({
       name: 'login',
       component: LoginView,
     },
+{
+  path: '/teams/create',
+  name: 'CreateTeam',
+  component: () => import('@/views/CreateTeam.vue')
+},
+
     {
       path: '/register',
       name: 'register',
@@ -37,6 +44,7 @@ const router = createRouter({
   name: 'TournamentDetails',
   component: () => import('@/views/TournamentDetailsView.vue'),
     },
+    
     {
   path: '/tournaments',
   name: 'tournaments',
